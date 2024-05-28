@@ -1,0 +1,23 @@
+{
+    "name": "finizens/fullstack-challenge",
+    "authors": [
+        {
+            "name": "Santiago Martinez Willi",
+            "email": "santiago30mw@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Finizens\\Apps\\PortfolioManager\\RestAPI\\": "apps/PortfolioManager/RestApi",
+            "Finizens\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    }
+}
