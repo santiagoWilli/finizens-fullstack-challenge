@@ -16,11 +16,7 @@ services:
       - DB_NAME=example
       - DB_USER=root
     volumes:
-      - ./composer.json:/var/www/html/composer.json
-      - ./composer.lock:/var/www/html/composer.lock
-      - ./src:/var/www/html/src
-      - ./apps:/var/www/html/apps
-      - ./vendor:/var/www/html/vendor
+      - .:/var/www/html
   db:
     image: mariadb
     restart: always
