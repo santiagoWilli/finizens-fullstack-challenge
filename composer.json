@@ -21,5 +21,11 @@
         "psr-4": {
             "Tests\\": "tests"
         }
+    },
+    "require-dev": {
+        "behat/behat": "^3.14",
+        "behat/mink": "^1.11",
+        "behat/mink-extension": "^2.3",
+        "behat/mink-goutte-driver": "^1.3"
     }
 }
