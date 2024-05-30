@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./docker/php/Dockerfile
     ports:
-      - 9000:80
+      - 9000:9000
     depends_on:
       db:
         condition: service_healthy
@@ -19,7 +19,8 @@ services:
       - ./composer.json:/var/www/html/composer.json
       - ./composer.lock:/var/www/html/composer.lock
       - ./src:/var/www/html/src
-      - ./apps/PortfolioManager/RestApi:/var/www/html/app
+      - ./apps:/var/www/html/apps
+      - ./vendor:/var/www/html/vendor
   db:
     image: mariadb
     restart: always

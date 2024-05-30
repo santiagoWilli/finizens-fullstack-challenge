@@ -7,7 +7,9 @@
         }
     ],
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.2",
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.6"
     },
     "autoload": {
         "psr-4": {

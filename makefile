@@ -9,8 +9,9 @@ start:
 
 du:
 	docker compose up --build -d;
-
 ds:
 	docker compose down --rmi local;
 de:
 	docker-compose exec server bash
+ps:
+	docker-compose ps
