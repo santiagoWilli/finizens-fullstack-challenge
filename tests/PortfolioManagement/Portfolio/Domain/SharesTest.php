@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Tests\PortolioManagement\Portfolio\Domain;
-
 use PHPUnit\Framework\TestCase;
 use Finizens\PortfolioManagement\Portfolio\Domain\Shares;
 use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\SharesAreNegative;
