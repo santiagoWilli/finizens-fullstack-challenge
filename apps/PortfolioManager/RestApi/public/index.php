@@ -5,14 +5,33 @@ use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\DummyPortfolioRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
+use Slim\Psr7\Response as Psr7Response;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
 
 $app = AppFactory::create();
 
 $app->addBodyParsingMiddleware();
+$errorMiddleware = $app->addErrorMiddleware(false, false, false);
+$errorMiddleware->setDefaultErrorHandler(function (Request $request, Throwable $exception) {
+    $response = new Psr7Response();
+    $statusCode = 500;
+    if ($exception instanceof HttpMethodNotAllowedException) {
+        $statusCode = 405;
+    } else {
+        $response->getBody()->write(json_encode([
+            'error' => [
+                'message' => $exception->getMessage() ?: 'Internal Server Error'
+            ]
+        ]));
+    }
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus($statusCode);
+});
 
 $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
