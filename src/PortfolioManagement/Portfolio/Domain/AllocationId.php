@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Portfolio\Domain;
 
-final class AllocationId
-{
-    public function __construct(private readonly int $value) {}
+use Finizens\Shared\Domain\IntegerValueObject;
 
-    public function getValue(): int
-    {
-        return $this->value;
-    }
-}
+final class AllocationId extends IntegerValueObject {}
