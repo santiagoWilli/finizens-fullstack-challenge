@@ -23,6 +23,11 @@ $app->put('/api/portfolios/{id}', function (Request $request, Response $response
     $allocations = [];
     $rawAllocations = $body['allocations'];
     foreach ($rawAllocations as $rawAllocation) {
+        if (!isset($rawAllocation['id']) || !isset($rawAllocation['shares'])) {
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        }
         $allocations[] = Allocation::create(
             $rawAllocation['id'],
             $rawAllocation['shares']
