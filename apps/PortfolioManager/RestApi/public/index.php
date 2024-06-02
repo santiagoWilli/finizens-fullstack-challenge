@@ -5,6 +5,7 @@ use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Portfolio\PutPortfolioCon
 use Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers\DefaultJsonErrorHandler;
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
+use Slim\Routing\RouteCollectorProxy;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
 require __DIR__ . '/../config/container.php';
@@ -18,7 +19,9 @@ $errorMiddleware->setDefaultErrorHandler(DefaultJsonErrorHandler::class);
 $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
 
-$app->get('/api/portfolios/{id}', GetPortfolioController::class);
-$app->put('/api/portfolios/{id}', PutPortfolioController::class);
+$app->group('/api/portfolios/{id}', function (RouteCollectorProxy $group) {
+    $group->get('', GetPortfolioController::class);
+    $group->put('', PutPortfolioController::class);
+});
 
 $app->run();
