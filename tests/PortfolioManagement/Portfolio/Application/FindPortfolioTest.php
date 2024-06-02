@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Finizens\PortfolioManagement\Portfolio\Application\FindPortfolio;
-use Finizens\PortfolioManagement\Portfolio\Domain\Portfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use Tests\PortfolioManagement\Portfolio\MockPortfolio;
 
 final class FindPortfolioTest extends TestCase
 {
@@ -28,7 +28,7 @@ final class FindPortfolioTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $allocations[] = Allocation::create($i, $i * 10);
         }
-        $expected = self::getInstanceOfPortfolioFrom($id, $allocations);
+        $expected = MockPortfolio::with($id, $allocations);
 
         $this->repository->expects($this->once())
             ->method('search')
@@ -36,14 +36,5 @@ final class FindPortfolioTest extends TestCase
             ->willReturn($expected);
 
         $this->assertEquals($expected, $this->sut->__invoke($id));
-    }
-
-    private static function getInstanceOfPortfolioFrom(int $id, array $allocations): Portfolio
-    {
-        $portfolio = Portfolio::create($id);
-        foreach ($allocations as $allocation) {
-            $portfolio->addAllocation($allocation);
-        }
-        return $portfolio;
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Finizens\PortfolioManagement\Portfolio\Application\CreatePortfolio;
-use Finizens\PortfolioManagement\Portfolio\Domain\Portfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use Tests\PortfolioManagement\Portfolio\MockPortfolio;
 
 final class CreatePortfolioTest extends TestCase
 {
@@ -31,17 +31,8 @@ final class CreatePortfolioTest extends TestCase
 
         $this->repository->expects($this->once())
             ->method('save')
-            ->with(self::getInstanceOfPortfolioFrom($id, $allocations));
+            ->with(MockPortfolio::with($id, $allocations));
 
         $this->sut->__invoke($id, ...$allocations);
-    }
-
-    private static function getInstanceOfPortfolioFrom(int $id, array $allocations): Portfolio
-    {
-        $portfolio = Portfolio::create($id);
-        foreach ($allocations as $allocation) {
-            $portfolio->addAllocation($allocation);
-        }
-        return $portfolio;
     }
 }
