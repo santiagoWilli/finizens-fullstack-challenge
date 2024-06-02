@@ -13,7 +13,7 @@ services:
     environment:
       - PASSWORD_FILE_PATH=/run/secrets/db-password
       - DB_HOST=db
-      - DB_NAME=example
+      - DB_NAME=finizens
       - DB_USER=root
     volumes:
       - .:/var/www/html
@@ -24,10 +24,11 @@ services:
     secrets:
       - db-password
     volumes:
-      - db-data:/var/lib/mysql
+      - ./db/data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-password
-      - MARIADB_DATABASE=example
+      - MARIADB_DATABASE=finizens
     expose:
       - 3306
     healthcheck:
