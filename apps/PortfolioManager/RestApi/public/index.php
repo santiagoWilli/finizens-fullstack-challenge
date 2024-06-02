@@ -2,6 +2,7 @@
 
 use Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers\DefaultJsonErrorHandler;
 use Finizens\PortfolioManagement\Portfolio\Application\CreatePortfolio;
+use Finizens\PortfolioManagement\Portfolio\Application\FindPortfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -30,6 +31,42 @@ $pdo = new PDO($dsn, $username, $password, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 ]);
+
+$app->get('/api/portfolios/{id}', function (Request $request, Response $response, $id) use ($pdo) {
+    $body = $request->getParsedBody();
+
+    $allocations = [];
+    $rawAllocations = $body['allocations'];
+    foreach ($rawAllocations as $rawAllocation) {
+        if (!isset($rawAllocation['id']) || !isset($rawAllocation['shares'])) {
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        }
+        $allocations[] = Allocation::create(
+            $rawAllocation['id'],
+            $rawAllocation['shares']
+        );
+    }
+
+    $findPortfolio = new FindPortfolio(new MySQLPortfolioRepository($pdo));
+    $portfolio = $findPortfolio((int) $id);
+
+    $response
+        ->getBody()
+        ->write(json_encode([
+            'id' => $portfolio->getId(),
+            'allocations' => array_map(function (Allocation $allocation) {
+                return [
+                    'id' => $allocation->getId(),
+                    'shares' => $allocation->getShares()
+                ];
+            }, $portfolio->getAllocations())
+        ]));
+    return $response
+        ->withStatus(200)
+        ->withHeader('Content-Type', 'application/json');
+});
 
 $app->put('/api/portfolios/{id}', function (Request $request, Response $response, $id) use ($pdo) {
     $body = $request->getParsedBody();
