@@ -6,5 +6,6 @@ namespace Finizens\PortfolioManagement\Portfolio\Domain;
 
 interface PortfolioRepository
 {
-    public function save(Portfolio $portfolio);
+    public function search(int $id): Portfolio;
+    public function save(Portfolio $portfolio): void;
 }

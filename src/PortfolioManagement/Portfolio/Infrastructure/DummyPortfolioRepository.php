@@ -9,5 +9,9 @@ use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 
 final class DummyPortfolioRepository implements PortfolioRepository
 {
+    public function search(int $id): Portfolio
+    {
+        return Portfolio::create($id);
+    }
     public function save(Portfolio $portfolio): void {}
 }
