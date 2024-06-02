@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use GuzzleHttp\Client;
+use PHPUnit\Framework\Assert;
 use Psr\Http\Message\ResponseInterface;
 
 class FeatureContext implements Context
@@ -70,5 +71,18 @@ class FeatureContext implements Context
                 'Response body is not empty: ' . $body
             );
         }
+    }
+
+    /**
+     * @Then the response body should be:
+     */
+    public function theResponseBodyShouldBe(PyStringNode $expectedResponse)
+    {
+        $actualResponse = (string) $this->response->getBody();
+        Assert::assertJsonStringEqualsJsonString(
+            $expectedResponse->getRaw(),
+            $actualResponse,
+            "Expected response body to be {$expectedResponse->getRaw()} but got $actualResponse"
+        );
     }
 }
