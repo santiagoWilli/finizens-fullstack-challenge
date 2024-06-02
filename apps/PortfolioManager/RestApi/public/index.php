@@ -3,7 +3,7 @@
 use Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers\DefaultJsonErrorHandler;
 use Finizens\PortfolioManagement\Portfolio\Application\CreatePortfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
-use Finizens\PortfolioManagement\Portfolio\Infrastructure\DummyPortfolioRepository;
+use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -20,7 +20,18 @@ $errorMiddleware->setDefaultErrorHandler(DefaultJsonErrorHandler::class);
 $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
 
-$app->put('/api/portfolios/{id}', function (Request $request, Response $response, $id) {
+$db_host = getenv('DB_HOST');
+$db_name = getenv('DB_NAME');
+$dsn = "mysql:host=$db_host;dbname=$db_name";
+$username = getenv('DB_USER');
+$password = trim(file_get_contents(getenv('PASSWORD_FILE_PATH')));
+
+$pdo = new PDO($dsn, $username, $password, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+]);
+
+$app->put('/api/portfolios/{id}', function (Request $request, Response $response, $id) use ($pdo) {
     $body = $request->getParsedBody();
 
     $allocations = [];
@@ -37,7 +48,7 @@ $app->put('/api/portfolios/{id}', function (Request $request, Response $response
         );
     }
 
-    $createPortfolio = new CreatePortfolio(new DummyPortfolioRepository());
+    $createPortfolio = new CreatePortfolio(new MySQLPortfolioRepository($pdo));
     $createPortfolio((int) $id, ...$allocations);
 
     return $response
