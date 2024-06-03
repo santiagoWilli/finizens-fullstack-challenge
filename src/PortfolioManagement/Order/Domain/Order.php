@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Order\Domain;
 
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\UnknownOrderType;
 use Finizens\Shared\Domain\AllocationId;
 use Finizens\Shared\Domain\PortfolioId;
@@ -19,6 +20,10 @@ final class Order
         private readonly Shares $shares
     ) {}
 
+    /**
+     * @throws UnknownOrderType
+     * @throws SharesAreNotPositive
+     */
     public static function create(int $id, int $portfolioId, int $allocationId, string $type, int $shares): self
     {
         try {

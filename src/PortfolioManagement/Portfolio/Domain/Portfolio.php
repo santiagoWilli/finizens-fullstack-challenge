@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Portfolio\Domain;
 
+use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\SharesAreNegative;
 use Finizens\Shared\Domain\PortfolioId;
 
 final class Portfolio
@@ -16,6 +17,9 @@ final class Portfolio
         $this->allocations = [];
     }
 
+    /**
+     * @throws SharesAreNegative
+     */
     public static function create(int $id): self
     {
         return new self(new PortfolioId($id));
