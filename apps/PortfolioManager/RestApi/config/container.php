@@ -5,27 +5,30 @@ use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use Finizens\PortfolioManagement\Order\Infrastructure\MySQLOrderRepository;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
+use Psr\Container\ContainerInterface;
 use Slim\Factory\AppFactory;
 
 $container = new Container();
 
-$container->set(PortfolioRepository::class, function () {
+$container->set(PDO::class, function () {
     $db_host = getenv('DB_HOST');
     $db_name = getenv('DB_NAME');
     $dsn = "mysql:host=$db_host;dbname=$db_name";
     $username = getenv('DB_USER');
     $password = trim(file_get_contents(getenv('PASSWORD_FILE_PATH')));
 
-    $pdo = new PDO($dsn, $username, $password, [
+    return new PDO($dsn, $username, $password, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
-
-    return new MySQLPortfolioRepository($pdo);
 });
 
-$container->set(OrderRepository::class, function () {
-    return new MySQLOrderRepository();
+$container->set(PortfolioRepository::class, function (ContainerInterface $container) {
+    return new MySQLPortfolioRepository($container->get(PDO::class));
+});
+
+$container->set(OrderRepository::class, function (ContainerInterface $container) {
+    return new MySQLOrderRepository($container->get(PDO::class));
 });
 
 AppFactory::setContainer($container);

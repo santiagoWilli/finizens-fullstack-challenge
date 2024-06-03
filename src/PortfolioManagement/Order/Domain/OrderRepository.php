@@ -8,6 +8,5 @@ use Finizens\PortfolioManagement\Order\Domain\Exceptions\OrderAlreadyExists;
 
 interface OrderRepository
 {
-    /** @throws OrderAlreadyExists */
     public function save(Order $order): void;
 }
