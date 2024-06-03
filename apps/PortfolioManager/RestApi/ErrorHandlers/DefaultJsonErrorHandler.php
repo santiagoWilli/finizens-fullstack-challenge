@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers;
 
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\UnknownOrderType;
 use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
+use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\SharesAreNegative;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpMethodNotAllowedException;
@@ -22,17 +25,26 @@ final class DefaultJsonErrorHandler implements ErrorHandlerInterface
         bool $logErrorDetails
     ): ResponseInterface {
         $response = new Psr7Response();
-        $statusCode = 500;
-        if ($exception instanceof HttpMethodNotAllowedException) {
-            $statusCode = 405;
-        } else if ($exception instanceof PortfolioNotFound) {
-            $statusCode = 404;
-        } else {
-            $response->getBody()->write(json_encode([
-                'error' => [
-                    'message' => $exception->getMessage() ?: 'Internal Server Error'
-                ]
-            ]));
+        switch (get_class($exception)) {
+            case HttpMethodNotAllowedException::class:
+                $statusCode = 405;
+                break;
+            case PortfolioNotFound::class:
+                $statusCode = 404;
+                break;
+            case UnknownOrderType::class:
+            case SharesAreNegative::class:
+            case SharesAreNotPositive::class:
+                $statusCode = 400;
+                break;
+            default:
+                $statusCode = 500;
+                $response->getBody()->write(json_encode([
+                    'error' => [
+                        'message' => $exception->getMessage() ?: 'Internal Server Error'
+                    ]
+                ]));
+                break;
         }
         return $response
             ->withHeader('Content-Type', 'application/json')
