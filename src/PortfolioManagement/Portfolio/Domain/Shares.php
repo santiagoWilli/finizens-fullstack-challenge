@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Portfolio\Domain;
 
-use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\SharesAreNegative;
+use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\SharesAreNegative as ExceptionsSharesAreNegative;
 
 final class Shares
 {
     public function __construct(private readonly int $value)
     {
         if ($value < 0) {
-            throw new SharesAreNegative();
+            throw new ExceptionsSharesAreNegative();
         }
     }
 

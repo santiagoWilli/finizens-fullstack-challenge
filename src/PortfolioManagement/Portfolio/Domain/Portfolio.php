@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Portfolio\Domain;
 
+use Finizens\Shared\Domain\PortfolioId;
+
 final class Portfolio
 {
     /** @var Allocation[] $allocations */
