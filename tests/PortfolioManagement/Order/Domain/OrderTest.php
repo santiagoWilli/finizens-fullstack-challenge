@@ -22,7 +22,7 @@ final class OrderTest extends TestCase
         $this->assertEquals($id, $order->getId());
         $this->assertEquals($portfolioId, $order->getPortfolioId());
         $this->assertEquals($allocationId, $order->getAllocationId());
-        $this->assertEquals($type, $order->getType());
+        $this->assertEquals($type, $order->getType()->value);
         $this->assertEquals($shares, $order->getShares());
     }
 

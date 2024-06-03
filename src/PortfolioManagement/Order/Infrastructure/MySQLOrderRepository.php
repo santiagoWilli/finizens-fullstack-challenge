@@ -28,7 +28,7 @@ final class MySQLOrderRepository implements OrderRepository
             ':id' => $order->getId(),
             ':portfolio_id' => $order->getPortfolioId(),
             ':allocation_id' => $order->getAllocationId(),
-            ':type' => $order->getType(),
+            ':type' => $order->getType()->value,
             ':shares' => $order->getShares(),
         ]);
     }

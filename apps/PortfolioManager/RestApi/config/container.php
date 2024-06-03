@@ -1,7 +1,9 @@
 <?php
 
 use DI\Container;
+use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
+use Finizens\PortfolioManagement\Order\Infrastructure\MySQLAllocationRepository;
 use Finizens\PortfolioManagement\Order\Infrastructure\MySQLOrderRepository;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
@@ -29,6 +31,10 @@ $container->set(PortfolioRepository::class, function (ContainerInterface $contai
 
 $container->set(OrderRepository::class, function (ContainerInterface $container) {
     return new MySQLOrderRepository($container->get(PDO::class));
+});
+
+$container->set(AllocationRepository::class, function (ContainerInterface $container) {
+    return new MySQLAllocationRepository($container->get(PDO::class));
 });
 
 AppFactory::setContainer($container);

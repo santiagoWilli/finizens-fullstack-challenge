@@ -55,9 +55,9 @@ final class Order
         return $this->allocationId->getValue();
     }
 
-    public function getType(): string
+    public function getType(): OrderType
     {
-        return $this->type->value;
+        return $this->type;
     }
 
     public function getShares(): int

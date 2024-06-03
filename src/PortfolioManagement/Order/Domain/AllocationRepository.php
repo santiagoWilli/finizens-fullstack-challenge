@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Order\Domain;
 
-enum OrderType: string
+interface AllocationRepository
 {
-    case Buy  = 'buy';
-    case Sell = 'sell';
+    public function exists(int $id): bool;
 }
