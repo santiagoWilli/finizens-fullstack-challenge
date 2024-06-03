@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Finizens\PortfolioManagement\Portfolio\Infrastructure;
 
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
+use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
 use Finizens\PortfolioManagement\Portfolio\Domain\Portfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use PDO;
@@ -22,6 +23,11 @@ final class MySQLPortfolioRepository implements PortfolioRepository
             $stmt->execute();
 
             $portfolioData = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$portfolioData) {
+                throw new PortfolioNotFound();
+            }
+
             $portfolio = Portfolio::create((int) $portfolioData['id']);
 
             $allocationsStmt = $this->connection->prepare('SELECT * FROM allocations WHERE portfolio_id = :id;');

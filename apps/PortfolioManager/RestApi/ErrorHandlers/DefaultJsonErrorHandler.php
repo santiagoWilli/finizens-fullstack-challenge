@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers;
 
+use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpMethodNotAllowedException;
@@ -24,6 +25,8 @@ final class DefaultJsonErrorHandler implements ErrorHandlerInterface
         $statusCode = 500;
         if ($exception instanceof HttpMethodNotAllowedException) {
             $statusCode = 405;
+        } else if ($exception instanceof PortfolioNotFound) {
+            $statusCode = 404;
         } else {
             $response->getBody()->write(json_encode([
                 'error' => [
