@@ -1,6 +1,8 @@
 <?php
 
 use DI\Container;
+use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
+use Finizens\PortfolioManagement\Order\Infrastructure\MySQLOrderRepository;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
 use Slim\Factory\AppFactory;
@@ -20,6 +22,10 @@ $container->set(PortfolioRepository::class, function () {
     ]);
 
     return new MySQLPortfolioRepository($pdo);
+});
+
+$container->set(OrderRepository::class, function () {
+    return new MySQLOrderRepository();
 });
 
 AppFactory::setContainer($container);

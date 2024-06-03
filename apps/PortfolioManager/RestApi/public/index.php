@@ -1,5 +1,6 @@
 <?php
 
+use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Order\PostOrderController;
 use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Portfolio\GetPortfolioController;
 use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Portfolio\PutPortfolioController;
 use Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers\DefaultJsonErrorHandler;
@@ -19,9 +20,15 @@ $errorMiddleware->setDefaultErrorHandler(DefaultJsonErrorHandler::class);
 $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
 
-$app->group('/api/portfolios/{id}', function (RouteCollectorProxy $group) {
-    $group->get('', GetPortfolioController::class);
-    $group->put('', PutPortfolioController::class);
+$app->group('/api', function (RouteCollectorProxy $group) {
+    $group->group('/portfolios/{id}', function (RouteCollectorProxy $group) {
+        $group->get('', GetPortfolioController::class);
+        $group->put('', PutPortfolioController::class);
+    });
+
+    $group->group('/orders', function (RouteCollectorProxy $group) {
+        $group->post('', PostOrderController::class);
+    });
 });
 
 $app->run();
