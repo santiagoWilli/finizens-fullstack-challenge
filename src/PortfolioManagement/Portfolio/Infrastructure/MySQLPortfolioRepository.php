@@ -19,8 +19,7 @@ final class MySQLPortfolioRepository implements PortfolioRepository
     {
         try {
             $stmt = $this->connection->prepare('SELECT * FROM portfolios WHERE id = :id;');
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute([ ':id' => $id ]);
 
             $portfolioData = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -31,8 +30,7 @@ final class MySQLPortfolioRepository implements PortfolioRepository
             $portfolio = Portfolio::create((int) $portfolioData['id']);
 
             $allocationsStmt = $this->connection->prepare('SELECT * FROM allocations WHERE portfolio_id = :id;');
-            $allocationsStmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $allocationsStmt->execute();
+            $allocationsStmt->execute([ ':id' => $id ]);
 
             while ($allocationData = $allocationsStmt->fetch(PDO::FETCH_ASSOC)) {
                 $allocation = Allocation::create(
@@ -54,21 +52,19 @@ final class MySQLPortfolioRepository implements PortfolioRepository
             $this->connection->beginTransaction();
 
             $stmt = $this->connection->prepare('INSERT INTO portfolios (id) VALUES (:id) ON DUPLICATE KEY UPDATE id = :id;');
-            $stmt->bindParam(':id', $portfolio->getId(), PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute([ ':id' => $portfolio->getId() ]);
 
             $deleteAllocationsStmt = $this->connection->prepare('DELETE FROM allocations WHERE portfolio_id = :portfolio_id;');
-            $deleteAllocationsStmt->bindParam(':portfolio_id', $portfolio->getId(), PDO::PARAM_INT);
-            $deleteAllocationsStmt->execute();
+            $deleteAllocationsStmt->execute([ ':portfolio_id' => $portfolio->getId() ]);
 
             $insertAllocationStmt = $this->connection->prepare('INSERT INTO allocations (id, portfolio_id, shares) VALUES (:id, :portfolio_id, :shares);');
             foreach ($portfolio->getAllocations() as $allocation) {
-                $insertAllocationStmt->bindParam(':id', $allocation->getId(), PDO::PARAM_INT);
-                $insertAllocationStmt->bindParam(':portfolio_id', $portfolio->getId(), PDO::PARAM_INT);
-                $insertAllocationStmt->bindParam(':shares', $allocation->getShares(), PDO::PARAM_INT);
-                $insertAllocationStmt->execute();
+                $insertAllocationStmt->execute([
+                    ':id' => $allocation->getId(),
+                    ':portfolio_id' => $portfolio->getId(),
+                    ':shares' => $allocation->getShares()
+                ]);
             }
-
             $this->connection->commit();
         } catch (PDOException $e) {
             $this->connection->rollBack();
