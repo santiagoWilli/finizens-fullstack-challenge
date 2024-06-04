@@ -15,9 +15,9 @@ final class AllocationShares
         }
     }
 
-    public function substract(int $amount): AllocationShares
+    public function substract(int $amount): self
     {
-        return new AllocationShares($this->value - $amount);
+        return new self($this->value - $amount);
     }
 
     public function getValue(): int
