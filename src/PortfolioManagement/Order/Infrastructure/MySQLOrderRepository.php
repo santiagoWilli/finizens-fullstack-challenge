@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Order\Infrastructure;
 
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\OrderNotFound;
 use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use PDO;
@@ -11,6 +12,11 @@ use PDO;
 final class MySQLOrderRepository implements OrderRepository
 {
     public function __construct(private PDO $pdo) {}
+
+    public function find(int $id): Order
+    {
+        throw new OrderNotFound();
+    }
 
     public function save(Order $order): void
     {
