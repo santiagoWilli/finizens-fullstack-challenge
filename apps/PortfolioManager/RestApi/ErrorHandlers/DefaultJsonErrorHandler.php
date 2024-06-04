@@ -6,6 +6,7 @@ namespace Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers;
 
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationSharesWouldBeNegative;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\OrderNotFound;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\UnknownOrderType;
 use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
@@ -33,6 +34,7 @@ final class DefaultJsonErrorHandler implements ErrorHandlerInterface
                 break;
             case PortfolioNotFound::class:
             case AllocationNotFound::class:
+            case OrderNotFound::class:
                 $statusCode = 404;
                 break;
             case UnknownOrderType::class:

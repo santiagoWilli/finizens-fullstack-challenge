@@ -31,7 +31,7 @@ Feature: Complete an active order
       "type": "buy"
     }
     """
-    And the response status code should be 200
+    And the response status code should be 201
     And the response should be empty
     When I send a PATCH request to "/api/orders/1" with body:
     """

@@ -15,7 +15,15 @@ final class MySQLOrderRepository implements OrderRepository
 
     public function find(int $id): Order
     {
-        throw new OrderNotFound();
+        $stmt = $this->pdo->prepare('SELECT * FROM orders WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+        $orderData = $stmt->fetch();
+
+        if (!$orderData) {
+            throw new OrderNotFound();
+        }
+
+        return Order::create($orderData['id'], $orderData['portfolio_id'], $orderData['allocation_id'], $orderData['type'], $orderData['shares']);
     }
 
     public function save(Order $order): void
