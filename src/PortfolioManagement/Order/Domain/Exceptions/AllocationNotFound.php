@@ -6,4 +6,4 @@ namespace Finizens\PortfolioManagement\Order\Domain\Exceptions;
 
 use Exception;
 
-final class AllocationDoesNotExist extends Exception {}
+final class AllocationNotFound extends Exception {}

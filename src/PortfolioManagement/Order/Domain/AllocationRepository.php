@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Finizens\PortfolioManagement\Order\Domain;
 
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
+
 interface AllocationRepository
 {
-    public function exists(int $id): bool;
+    /** @throws AllocationNotFound */
+    public function find(int $id): Allocation;
 }

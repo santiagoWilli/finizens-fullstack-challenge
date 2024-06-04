@@ -20,8 +20,8 @@ class CreateOrder
     public function __invoke(int $id, int $portfolioId, int $allocationId, string $type, int $shares): void
     {
         $order = Order::create($id, $portfolioId, $allocationId, $type, $shares);
-        if ($order->getType() === OrderType::Sell && !$this->allocationRepository->exists($allocationId)) {
-            throw new AllocationDoesNotExist();
+        if ($order->getType() === OrderType::Sell) {
+            $this->allocationRepository->find($allocationId);
         }
         $this->orderRepository->save($order);
     }

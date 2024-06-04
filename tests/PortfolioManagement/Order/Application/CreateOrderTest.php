@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 use Finizens\PortfolioManagement\Order\Application\CreateOrder;
+use Finizens\PortfolioManagement\Order\Domain\Allocation;
 use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
-use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationDoesNotExist;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
 use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use PHPUnit\Framework\TestCase;
@@ -49,9 +50,9 @@ final class CreateOrderTest extends TestCase
         $shares = 10;
 
         $this->allocationRepository->expects($this->once())
-            ->method('exists')
+            ->method('find')
             ->with($allocationId)
-            ->willReturn(true);
+            ->willReturn(Allocation::create(1, 5));
         $this->orderRepository->expects($this->once())
             ->method('save')
             ->with(Order::create($id, $portfolioId, $allocationId, $type, $shares));
@@ -68,13 +69,13 @@ final class CreateOrderTest extends TestCase
         $shares = 10;
 
         $this->allocationRepository->expects($this->once())
-            ->method('exists')
+            ->method('find')
             ->with($allocationId)
-            ->willReturn(false);
+            ->willThrowException(new AllocationNotFound());
         $this->orderRepository->expects($this->never())
             ->method($this->anything());
 
-        $this->expectException(AllocationDoesNotExist::class);
+        $this->expectException(AllocationNotFound::class);
         $this->sut->__invoke($id, $portfolioId, $allocationId, $type, $shares);
     }
 }
