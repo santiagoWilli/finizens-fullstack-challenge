@@ -12,13 +12,17 @@ use ValueError;
 
 final class Order
 {
+    private bool $isCompleted;
+
     private function __construct(
         private readonly OrderId $id,
         private readonly PortfolioId $portfolioId,
         private readonly AllocationId $allocationId,
         private readonly OrderType $type,
         private readonly OrderShares $shares
-    ) {}
+    ) {
+        $this->isCompleted = false;
+    }
 
     /**
      * @throws UnknownOrderType
@@ -38,6 +42,11 @@ final class Order
             $orderType,
             new OrderShares($shares),
         );
+    }
+
+    public function complete(): void
+    {
+        $this->isCompleted = true;
     }
 
     public function getId(): int
@@ -63,5 +72,10 @@ final class Order
     public function getShares(): int
     {
         return $this->shares->getValue();
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->isCompleted;
     }
 }

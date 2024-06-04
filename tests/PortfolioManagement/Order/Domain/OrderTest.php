@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class OrderTest extends TestCase
 {
-    public function testOrderCanBeCreatedWithValidData(): void
+    public function testOrderCanBeCreatedWithValidDataAndIsNotCompletedUponCreation(): void
     {
         $id = 1;
         $portfolioId = 1;
@@ -24,6 +24,7 @@ final class OrderTest extends TestCase
         $this->assertEquals($allocationId, $order->getAllocationId());
         $this->assertEquals($type, $order->getType()->value);
         $this->assertEquals($shares, $order->getShares());
+        $this->assertEquals(false, $order->isCompleted());
     }
 
     public function testOrderCannotBeCreatedWithNonGreaterThanZeroShares(): void
@@ -36,5 +37,13 @@ final class OrderTest extends TestCase
     {
         $this->expectException(UnknownOrderType::class);
         Order::create(1, 1, 2, 'invalid', 1);
+    }
+
+    public function testOrderCompleteMarksTheOrderAsCompleted(): void
+    {
+        $order = Order::create(1, 2, 3, 'buy', 5);
+        $this->assertFalse($order->isCompleted());
+        $order->complete();
+        $this->assertTrue($order->isCompleted());
     }
 }
