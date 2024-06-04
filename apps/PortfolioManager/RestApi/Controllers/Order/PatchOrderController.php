@@ -14,6 +14,14 @@ final class PatchOrderController
 
     public function __invoke(Request $request, Response $response, $id): Response
     {
+        $body = $request->getParsedBody();
+
+        if (($body['status'] ?? '') !== 'completed') {
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        }
+
         ($this->completeOrder)((int) $id);
 
         return $response
