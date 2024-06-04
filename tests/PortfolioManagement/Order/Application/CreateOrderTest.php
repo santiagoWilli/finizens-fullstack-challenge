@@ -6,6 +6,8 @@ use Finizens\PortfolioManagement\Order\Application\CreateOrder;
 use Finizens\PortfolioManagement\Order\Domain\Allocation;
 use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationSharesWouldBeNegative;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
 use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +43,7 @@ final class CreateOrderTest extends TestCase
         $this->sut->__invoke($id, $portfolioId, $allocationId, $type, $shares);
     }
 
-    public function testCreateSellOrderForExistingAllocation(): void
+    public function testCreateSellOrderForExistingAllocationWithMoreThanTheOrderShares(): void
     {
         $id = 1;
         $portfolioId = 1;
@@ -52,11 +54,50 @@ final class CreateOrderTest extends TestCase
         $this->allocationRepository->expects($this->once())
             ->method('find')
             ->with($allocationId)
-            ->willReturn(Allocation::create(1, 5));
+            ->willReturn(Allocation::create(1, $shares + 5));
         $this->orderRepository->expects($this->once())
             ->method('save')
             ->with(Order::create($id, $portfolioId, $allocationId, $type, $shares));
 
+        $this->sut->__invoke($id, $portfolioId, $allocationId, $type, $shares);
+    }
+
+
+    public function testCreateSellOrderForExistingAllocationWithTheExactOrderShares(): void
+    {
+        $id = 1;
+        $portfolioId = 1;
+        $allocationId = 2;
+        $type = 'sell';
+        $shares = 10;
+
+        $this->allocationRepository->expects($this->once())
+            ->method('find')
+            ->with($allocationId)
+            ->willReturn(Allocation::create(1, $shares));
+        $this->orderRepository->expects($this->once())
+            ->method('save')
+            ->with(Order::create($id, $portfolioId, $allocationId, $type, $shares));
+
+        $this->sut->__invoke($id, $portfolioId, $allocationId, $type, $shares);
+    }
+
+    public function testCreateSellOrderForExistingAllocationWithLessThanTheOrderShares(): void
+    {
+        $id = 1;
+        $portfolioId = 1;
+        $allocationId = 2;
+        $type = 'sell';
+        $shares = 10;
+
+        $this->allocationRepository->expects($this->once())
+            ->method('find')
+            ->with($allocationId)
+            ->willReturn(Allocation::create(1, $shares - 1));
+        $this->orderRepository->expects($this->never())
+            ->method('save');
+
+        $this->expectException(AllocationSharesWouldBeNegative::class);
         $this->sut->__invoke($id, $portfolioId, $allocationId, $type, $shares);
     }
 

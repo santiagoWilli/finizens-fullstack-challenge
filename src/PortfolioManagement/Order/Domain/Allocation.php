@@ -10,7 +10,7 @@ final class Allocation
 {
     private function __construct(
         private readonly AllocationId $id,
-        private readonly Shares $shares
+        private readonly AllocationShares $shares
     ) {}
 
     /**
@@ -20,8 +20,13 @@ final class Allocation
     {
         return new self(
             new AllocationId($id),
-            new Shares($shares),
+            new AllocationShares($shares),
         );
+    }
+
+    public function substractShares(int $amount): void
+    {
+        $this->shares->substract($amount);
     }
 
     public function getId(): int

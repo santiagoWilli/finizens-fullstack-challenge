@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Finizens\PortfolioManagement\Order\Domain;
 
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
-use Finizens\Shared\Domain\SharesAreNegative;
 
-final class Shares
+final class OrderShares
 {
     public function __construct(private readonly int $value)
     {

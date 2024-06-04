@@ -17,7 +17,7 @@ final class Order
         private readonly PortfolioId $portfolioId,
         private readonly AllocationId $allocationId,
         private readonly OrderType $type,
-        private readonly Shares $shares
+        private readonly OrderShares $shares
     ) {}
 
     /**
@@ -36,7 +36,7 @@ final class Order
             new PortfolioId($portfolioId),
             new AllocationId($allocationId),
             $orderType,
-            new Shares($shares),
+            new OrderShares($shares),
         );
     }
 

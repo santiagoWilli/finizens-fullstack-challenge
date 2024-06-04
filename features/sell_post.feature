@@ -34,6 +34,37 @@ Feature: Create sell orders
     Then the response status code should be 201
     And the response should be empty
 
+  Scenario: Sell a valid allocation that leaves the allocation with 0 shares
+    Given I send a PUT request to "/api/portfolios/1" with body:
+    """
+    {
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 4
+        }
+      ]
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    When I send a POST request to "/api/orders" with body:
+    """
+    {
+      "id": 1,
+      "portfolio": 1,
+      "allocation": 2,
+      "shares": 4,
+      "type": "sell"
+    }
+    """
+    Then the response status code should be 201
+    And the response should be empty
+
   Scenario: Sell unknown allocation
     Given I send a PUT request to "/api/portfolios/1" with body:
     """

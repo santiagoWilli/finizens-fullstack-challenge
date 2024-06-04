@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers;
 
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
+use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationSharesWouldBeNegative;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\UnknownOrderType;
 use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
@@ -38,6 +39,9 @@ final class DefaultJsonErrorHandler implements ErrorHandlerInterface
             case SharesAreNegative::class:
             case SharesAreNotPositive::class:
                 $statusCode = 400;
+                break;
+            case AllocationSharesWouldBeNegative::class:
+                $statusCode = 500;
                 break;
             default:
                 $statusCode = 500;

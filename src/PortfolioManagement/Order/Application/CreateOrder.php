@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Finizens\PortfolioManagement\Order\Application;
 
 use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
-use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationDoesNotExist;
 use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use Finizens\PortfolioManagement\Order\Domain\OrderType;
@@ -21,7 +20,8 @@ class CreateOrder
     {
         $order = Order::create($id, $portfolioId, $allocationId, $type, $shares);
         if ($order->getType() === OrderType::Sell) {
-            $this->allocationRepository->find($allocationId);
+            $allocation = $this->allocationRepository->find($allocationId);
+            $allocation->substractShares($shares);
         }
         $this->orderRepository->save($order);
     }
