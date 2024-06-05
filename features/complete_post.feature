@@ -250,3 +250,62 @@ Feature: Complete an active order
     Given I send a PATCH request to "/api/orders/1"
     Then the response status code should be 400
     And the response should be empty
+
+  Scenario: Complete a sell order that exceeds the current allocation shares
+    Given I send a PUT request to "/api/portfolios/1" with body:
+    """
+    {
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 4
+        }
+      ]
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    And I send a POST request to "/api/orders" with body:
+    """
+    {
+      "id": 1,
+      "portfolio": 1,
+      "allocation": 2,
+      "shares": 3,
+      "type": "sell"
+    }
+    """
+    And the response status code should be 201
+    And the response should be empty
+    And I send a POST request to "/api/orders" with body:
+    """
+    {
+      "id": 2,
+      "portfolio": 1,
+      "allocation": 2,
+      "shares": 3,
+      "type": "sell"
+    }
+    """
+    And the response status code should be 201
+    And the response should be empty
+    And I send a PATCH request to "/api/orders/1" with body:
+    """
+    {
+      "status": "completed"
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    When I send a PATCH request to "/api/orders/2" with body:
+    """
+    {
+      "status": "completed"
+    }
+    """
+    Then the response status code should be 409
+    And the response should be empty
