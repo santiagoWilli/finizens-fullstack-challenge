@@ -121,6 +121,116 @@ Feature: Complete an active order
     }
     """
 
+  Scenario: Complete a sell order that keeps the shares above zero for the given allocation
+    Given I send a PUT request to "/api/portfolios/1" with body:
+    """
+    {
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 4
+        }
+      ]
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    And I send a POST request to "/api/orders" with body:
+    """
+    {
+      "id": 1,
+      "portfolio": 1,
+      "allocation": 2,
+      "shares": 2,
+      "type": "sell"
+    }
+    """
+    And the response status code should be 201
+    And the response should be empty
+    And I send a PATCH request to "/api/orders/1" with body:
+    """
+    {
+      "status": "completed"
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    When I send a GET request to "/api/portfolios/1"
+    Then the response status code should be 200
+    And the response body should be:
+    """
+     {
+      "id": 1,
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 2
+        }
+      ]
+    }
+    """
+
+  Scenario: Complete a sell order that hits zero shares for the given allocation
+    Given I send a PUT request to "/api/portfolios/1" with body:
+    """
+    {
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 4
+        }
+      ]
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    And I send a POST request to "/api/orders" with body:
+    """
+    {
+      "id": 1,
+      "portfolio": 1,
+      "allocation": 2,
+      "shares": 4,
+      "type": "sell"
+    }
+    """
+    And the response status code should be 201
+    And the response should be empty
+    And I send a PATCH request to "/api/orders/1" with body:
+    """
+    {
+      "status": "completed"
+    }
+    """
+    And the response status code should be 200
+    And the response should be empty
+    When I send a GET request to "/api/portfolios/1"
+    Then the response status code should be 200
+    And the response body should be:
+    """
+     {
+      "id": 1,
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        }
+      ]
+    }
+    """
+
   Scenario: A unknown order
     Given I send a PATCH request to "/api/orders/401" with body:
     """

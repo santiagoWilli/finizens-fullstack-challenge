@@ -39,6 +39,20 @@ final class Portfolio
         );
     }
 
+    public function removeSharesFromAllocation(int $allocationId, int $shares): void
+    {
+        $existingAllocation = $this->allocations[$allocationId];
+        $updatedAllocation = Allocation::create(
+            $existingAllocation->getId(),
+            $existingAllocation->getShares() - $shares
+        );
+        if ($updatedAllocation->getShares() > 0) {
+            $this->allocations[$allocationId] = $updatedAllocation;
+        } else {
+            unset($this->allocations[$allocationId]);
+        }
+    }
+
     public function getId(): int
     {
         return $this->id->getValue();

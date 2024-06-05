@@ -35,6 +35,8 @@ class UpdatePortfolioUponOrderCompleted implements EventListener
             } else {
                 $portfolio->addSharesToAllocation($event->getAllocationId(), $event->getShares());
             }
+        } else {
+            $portfolio->removeSharesFromAllocation($event->getAllocationId(), $event->getShares());
         }
 
         $this->repository->save($portfolio);

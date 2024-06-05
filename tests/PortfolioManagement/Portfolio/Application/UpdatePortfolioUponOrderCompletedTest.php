@@ -65,12 +65,57 @@ final class UpdatePortfolioUponOrderCompletedTest extends TestCase
 
     public function testUpdatePortfolioUponABuyOrderWithAnExistingAllocation(): void
     {
+        $this->testModifyAmountOfShares(isBuy: true);
+    }
+
+    public function testUpdatePortfolioUponASellOrderThatKeepsTheSharesAboveZero(): void
+    {
+        $this->testModifyAmountOfShares(isBuy: false);
+    }
+
+    public function testUpdatePortfolioUponASellOrderThatRemovesTheAllocation(): void
+    {
         $portfolioId = 1;
         $allocationId = 3;
         $shares = 5;
 
         $event = $this->mockOrderCompletedEvent($portfolioId, $allocationId, $shares);
-        $event->method('isBuy')->willReturn(true);
+        $event->method('isBuy')->willReturn(false);
+
+        $allocations = [];
+        for ($i = 1; $i <= $allocationId + 1; $i++) {
+            $allocations[] = Allocation::create($i, $shares);
+        }
+        $portfolio = MockPortfolio::with($portfolioId, $allocations);
+
+        $this->repository->expects($this->once())
+            ->method('find')
+            ->willReturn($portfolio);
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (Portfolio $portfolio) use ($allocations, $allocationId, $shares) {
+                $portfolioAllocations = $portfolio->getAllocations();
+                $allocationIsFound = array_search(
+                    $allocationId,
+                    array_map(fn ($a) => $a->getId(), $portfolioAllocations)
+                );
+                return (
+                    count($portfolioAllocations) === count($allocations) - 1 &&
+                    !$allocationIsFound
+                );
+            }));
+
+        $this->sut->handle($event);
+    }
+
+    private function testModifyAmountOfShares(bool $isBuy): void
+    {
+        $portfolioId = 1;
+        $allocationId = 3;
+        $shares = 5;
+
+        $event = $this->mockOrderCompletedEvent($portfolioId, $allocationId, $shares);
+        $event->method('isBuy')->willReturn($isBuy);
 
         $allocations = [];
         for ($i = 1; $i <= $allocationId + 1; $i++) {
@@ -83,7 +128,7 @@ final class UpdatePortfolioUponOrderCompletedTest extends TestCase
             ->willReturn($savedPortfolio);
         $this->repository->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Portfolio $updatedPortfolio) use ($allocations, $allocationId, $shares) {
+            ->with($this->callback(function (Portfolio $updatedPortfolio) use ($allocations, $allocationId, $shares, $isBuy) {
                 $updatedAllocations = $updatedPortfolio->getAllocations();
                 $updatedAllocationIndex = array_search(
                     $allocationId,
@@ -93,7 +138,7 @@ final class UpdatePortfolioUponOrderCompletedTest extends TestCase
                 $savedAllocation = $allocations[$updatedAllocationIndex];
                 return (
                     count($updatedAllocations) === count($allocations) &&
-                    $updatedAllocation->getShares() === ($savedAllocation->getShares() + $shares)
+                    $updatedAllocation->getShares() === ($savedAllocation->getShares() + ($isBuy ? 1 : -1) * $shares)
                 );
             }));
 
