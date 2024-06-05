@@ -2,11 +2,15 @@
 
 use DI\Container;
 use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
+use Finizens\PortfolioManagement\Order\Domain\Events\OrderCompleted;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use Finizens\PortfolioManagement\Order\Infrastructure\MySQLAllocationRepository;
 use Finizens\PortfolioManagement\Order\Infrastructure\MySQLOrderRepository;
+use Finizens\PortfolioManagement\Portfolio\Application\UpdatePortfolioUponOrderCompleted;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use Finizens\PortfolioManagement\Portfolio\Infrastructure\MySQLPortfolioRepository;
+use Finizens\Shared\Domain\Event\EventDispatcher;
+use Finizens\Shared\Infrastructure\Event\InMemoryEventDispatcher;
 use Psr\Container\ContainerInterface;
 use Slim\Factory\AppFactory;
 
@@ -35,6 +39,12 @@ $container->set(OrderRepository::class, function (ContainerInterface $container)
 
 $container->set(AllocationRepository::class, function (ContainerInterface $container) {
     return new MySQLAllocationRepository($container->get(PDO::class));
+});
+
+$container->set(EventDispatcher::class, function (ContainerInterface $container) {
+    $eventDispatcher = new InMemoryEventDispatcher();
+    $eventDispatcher->addListener(OrderCompleted::class, $container->get(UpdatePortfolioUponOrderCompleted::class));
+    return $eventDispatcher;
 });
 
 AppFactory::setContainer($container);

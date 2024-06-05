@@ -3,7 +3,7 @@ Feature: Complete an active order
   system should be able
   to complete orders created
 
-  Scenario: Complete a buy order
+  Scenario: Complete a buy order for a new allocation
     Given I send a PUT request to "/api/portfolios/1" with body:
     """
     {
@@ -26,14 +26,14 @@ Feature: Complete an active order
     {
       "id": 1,
       "portfolio": 1,
-      "allocation": 1,
-      "shares": 3,
+      "allocation": 3,
+      "shares": 10,
       "type": "buy"
     }
     """
     And the response status code should be 201
     And the response should be empty
-    When I send a PATCH request to "/api/orders/1" with body:
+    And I send a PATCH request to "/api/orders/1" with body:
     """
     {
       "status": "completed"
@@ -41,6 +41,28 @@ Feature: Complete an active order
     """
     And the response status code should be 200
     And the response should be empty
+    When I send a GET request to "/api/portfolios/1"
+    Then the response status code should be 200
+    And the response body should be:
+    """
+     {
+      "id": 1,
+      "allocations": [
+        {
+          "id": 1,
+          "shares": 3
+        },
+        {
+          "id": 2,
+          "shares": 4
+        },
+        {
+          "id": 3,
+          "shares": 10
+        }
+      ]
+    }
+    """
 
   Scenario: A unknown order
     Given I send a PATCH request to "/api/orders/401" with body:
