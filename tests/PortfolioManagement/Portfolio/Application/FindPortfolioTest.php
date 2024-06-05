@@ -31,7 +31,7 @@ final class FindPortfolioTest extends TestCase
         $expected = MockPortfolio::with($id, $allocations);
 
         $this->repository->expects($this->once())
-            ->method('search')
+            ->method('find')
             ->with($id)
             ->willReturn($expected);
 

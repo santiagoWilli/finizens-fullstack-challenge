@@ -9,6 +9,6 @@ use Finizens\PortfolioManagement\Portfolio\Domain\Exceptions\PortfolioNotFound;
 interface PortfolioRepository
 {
     /** @throws PortfolioNotFound */
-    public function search(int $id): Portfolio;
+    public function find(int $id): Portfolio;
     public function save(Portfolio $portfolio): void;
 }

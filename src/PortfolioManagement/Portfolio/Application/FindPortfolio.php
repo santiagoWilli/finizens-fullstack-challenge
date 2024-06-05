@@ -13,6 +13,6 @@ class FindPortfolio
 
     public function __invoke(int $id): Portfolio
     {
-        return $this->repository->search($id);
+        return $this->repository->find($id);
     }
 }

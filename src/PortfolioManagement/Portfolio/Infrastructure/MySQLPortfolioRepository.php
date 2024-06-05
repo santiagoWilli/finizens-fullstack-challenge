@@ -15,7 +15,7 @@ final class MySQLPortfolioRepository implements PortfolioRepository
 {
     public function __construct(private readonly PDO $connection) {}
 
-    public function search(int $id): Portfolio
+    public function find(int $id): Portfolio
     {
         try {
             $stmt = $this->connection->prepare('SELECT * FROM portfolios WHERE id = :id;');
