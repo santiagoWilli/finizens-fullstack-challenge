@@ -8,16 +8,11 @@ use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderType;
 use Finizens\Shared\Domain\Event\DomainEvent;
 
-final class OrderCompleted implements DomainEvent
+class OrderCompleted implements DomainEvent
 {
     public function __construct(
         private readonly Order $order
     ) {}
-
-    public function getOrderId(): int
-    {
-        return $this->order->getId();
-    }
 
     public function getPortfolioId(): int
     {

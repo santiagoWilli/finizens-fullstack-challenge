@@ -21,7 +21,6 @@ final class OrderCompletedTest extends TestCase
             Order::create($orderId, $portfolioId, $allocationId, $buyType, $shares)
         );
 
-        $this->assertEquals($orderId, $event->getOrderId());
         $this->assertEquals($portfolioId, $event->getPortfolioId());
         $this->assertEquals($allocationId, $event->getAllocationId());
         $this->assertEquals($shares, $event->getShares());
