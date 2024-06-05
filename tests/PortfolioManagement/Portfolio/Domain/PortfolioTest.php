@@ -5,6 +5,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use Finizens\PortfolioManagement\Portfolio\Domain\Portfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
+use Tests\PortfolioManagement\Portfolio\MockPortfolio;
 
 final class PortfolioTest extends TestCase
 {
@@ -44,5 +45,33 @@ final class PortfolioTest extends TestCase
         
         $this->assertCount(count($allocations), $portfolio->getAllocations());
         $this->assertSame($allocations, $portfolio->getAllocations());
+    }
+
+    public function testSharesCanBeAddedToAnAllocationAndOnlyToThatAllocation(): void
+    {
+        $portfolioId = 1;
+        $allocations = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $allocations[] = Allocation::create($i, $i * 10);
+        }
+        $portfolio = MockPortfolio::with($portfolioId, $allocations);
+
+        $allocationToUpdate = $allocations[1];
+        $sharesToAdd = 50;
+        $portfolio->addSharesToAllocation($allocationToUpdate->getId(), $sharesToAdd);
+
+        foreach ($portfolio->getAllocations() as $key => $allocation) {
+            if ($allocation->getId() === $allocationToUpdate->getId()) {
+                $this->assertSame(
+                    $allocationToUpdate->getShares() + $sharesToAdd,
+                    $allocation->getShares()
+                );
+            } else {
+                $this->assertSame(
+                    $allocations[$key]->getShares(),
+                    $allocation->getShares()
+                );
+            }
+        }
     }
 }

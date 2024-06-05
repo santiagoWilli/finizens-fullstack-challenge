@@ -32,6 +32,8 @@ class UpdatePortfolioUponOrderCompleted implements EventListener
                 $portfolio->addAllocation(
                     Allocation::create($event->getAllocationId(), $event->getShares())
                 );
+            } else {
+                $portfolio->addSharesToAllocation($event->getAllocationId(), $event->getShares());
             }
         }
 

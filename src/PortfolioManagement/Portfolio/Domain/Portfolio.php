@@ -27,7 +27,16 @@ final class Portfolio
 
     public function addAllocation(Allocation $allocation): void
     {
-        $this->allocations[] = $allocation;
+        $this->allocations[$allocation->getId()] = $allocation;
+    }
+
+    public function addSharesToAllocation(int $allocationId, int $shares): void
+    {
+        $existingAllocation = $this->allocations[$allocationId];
+        $this->allocations[$allocationId] = Allocation::create(
+            $existingAllocation->getId(),
+            $existingAllocation->getShares() + $shares
+        );
     }
 
     public function getId(): int
@@ -38,6 +47,6 @@ final class Portfolio
     /** @return Allocation[] */
     public function getAllocations(): array
     {
-        return $this->allocations;
+        return array_values($this->allocations);
     }
 }

@@ -37,10 +37,7 @@ final class UpdatePortfolioUponOrderCompletedTest extends TestCase
         $allocationId = 3;
         $shares = 5;
 
-        $event = $this->createMock(OrderCompleted::class);
-        $event->method('getPortfolioId')->willReturn($portfolioId);
-        $event->method('getAllocationId')->willReturn($allocationId);
-        $event->method('getShares')->willReturn($shares);
+        $event = $this->mockOrderCompletedEvent($portfolioId, $allocationId, $shares);
         $event->method('isBuy')->willReturn(true);
 
         $allocations = [];
@@ -64,5 +61,51 @@ final class UpdatePortfolioUponOrderCompletedTest extends TestCase
             }));
 
         $this->sut->handle($event);
+    }
+
+    public function testUpdatePortfolioUponABuyOrderWithAnExistingAllocation(): void
+    {
+        $portfolioId = 1;
+        $allocationId = 3;
+        $shares = 5;
+
+        $event = $this->mockOrderCompletedEvent($portfolioId, $allocationId, $shares);
+        $event->method('isBuy')->willReturn(true);
+
+        $allocations = [];
+        for ($i = 1; $i <= $allocationId + 1; $i++) {
+            $allocations[] = Allocation::create($i, $i * 10);
+        }
+        $savedPortfolio = MockPortfolio::with($portfolioId, $allocations);
+
+        $this->repository->expects($this->once())
+            ->method('find')
+            ->willReturn($savedPortfolio);
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (Portfolio $updatedPortfolio) use ($allocations, $allocationId, $shares) {
+                $updatedAllocations = $updatedPortfolio->getAllocations();
+                $updatedAllocationIndex = array_search(
+                    $allocationId,
+                    array_map(fn ($a) => $a->getId(), $updatedAllocations)
+                );
+                $updatedAllocation = $updatedAllocations[$updatedAllocationIndex];
+                $savedAllocation = $allocations[$updatedAllocationIndex];
+                return (
+                    count($updatedAllocations) === count($allocations) &&
+                    $updatedAllocation->getShares() === ($savedAllocation->getShares() + $shares)
+                );
+            }));
+
+        $this->sut->handle($event);
+    }
+
+    private function mockOrderCompletedEvent(int $portfolioId, int $allocationId, int $shares): OrderCompleted|MockObject
+    {
+        $event = $this->createMock(OrderCompleted::class);
+        $event->method('getPortfolioId')->willReturn($portfolioId);
+        $event->method('getAllocationId')->willReturn($allocationId);
+        $event->method('getShares')->willReturn($shares);
+        return $event;
     }
 }
