@@ -6,6 +6,7 @@ namespace Finizens\PortfolioManagement\Portfolio\Application;
 
 use Finizens\PortfolioManagement\Order\Domain\Events\OrderCompleted;
 use Finizens\PortfolioManagement\Portfolio\Domain\Allocation;
+use Finizens\PortfolioManagement\Portfolio\Domain\Portfolio;
 use Finizens\PortfolioManagement\Portfolio\Domain\PortfolioRepository;
 use Finizens\Shared\Domain\Event\DomainEvent;
 use Finizens\Shared\Domain\Event\EventListener;
@@ -23,12 +24,7 @@ class UpdatePortfolioUponOrderCompleted implements EventListener
         $portfolio = $this->repository->find($event->getPortfolioId());
 
         if ($event->isBuy()) {
-            if (
-                array_search(
-                    $event->getAllocationId(),
-                    array_map(fn (Allocation $a) => $a->getId(), $portfolio->getAllocations())
-                ) === false
-            ) {
+            if (!self::isAllocationPresent($event->getAllocationId(), $portfolio)) {
                 $portfolio->addAllocation(
                     Allocation::create($event->getAllocationId(), $event->getShares())
                 );
@@ -40,5 +36,13 @@ class UpdatePortfolioUponOrderCompleted implements EventListener
         }
 
         $this->repository->save($portfolio);
+    }
+
+    private static function isAllocationPresent(int $allocationId, Portfolio $portfolio): bool
+    {
+        return array_search(
+            $allocationId,
+            array_map(fn (Allocation $a) => $a->getId(), $portfolio->getAllocations())
+        ) !== false;
     }
 }
