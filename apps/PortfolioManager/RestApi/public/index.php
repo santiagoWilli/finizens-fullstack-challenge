@@ -1,5 +1,6 @@
 <?php
 
+use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Order\GetOrdersController;
 use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Order\PatchOrderController;
 use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Order\PostOrderController;
 use Finizens\Apps\PortfolioManager\RestAPI\Controllers\Portfolio\GetPortfolioController;
@@ -28,6 +29,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     });
 
     $group->group('/orders', function (RouteCollectorProxy $group) {
+        $group->get('', GetOrdersController::class);
         $group->post('', PostOrderController::class);
         $group->patch('/{id}', PatchOrderController::class);
     });

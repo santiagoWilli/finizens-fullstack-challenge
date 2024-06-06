@@ -10,5 +10,7 @@ interface OrderRepository
 {
     /** @throws OrderNotFound */
     public function find(int $id): Order;
+    /** @return Order[] */
+    public function findPortfolioPendingOrders(int $portfolioId): array;
     public function save(Order $order): void;
 }

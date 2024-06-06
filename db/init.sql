@@ -15,5 +15,6 @@ CREATE TABLE IF NOT EXISTS orders (
     allocation_id INT,
     type VARCHAR(255),
     shares INT,
+    is_completed TINYINT(1),
     FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE CASCADE
 );

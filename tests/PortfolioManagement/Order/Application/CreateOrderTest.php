@@ -7,7 +7,6 @@ use Finizens\PortfolioManagement\Order\Domain\Allocation;
 use Finizens\PortfolioManagement\Order\Domain\AllocationRepository;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationNotFound;
 use Finizens\PortfolioManagement\Order\Domain\Exceptions\AllocationSharesWouldBeNegative;
-use Finizens\PortfolioManagement\Order\Domain\Exceptions\SharesAreNotPositive;
 use Finizens\PortfolioManagement\Order\Domain\Order;
 use Finizens\PortfolioManagement\Order\Domain\OrderRepository;
 use PHPUnit\Framework\TestCase;
