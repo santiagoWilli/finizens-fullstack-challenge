@@ -11,7 +11,10 @@ du:
 	docker compose up --build -d;
 ds:
 	docker compose down --rmi local;
-de:
+des:
 	docker-compose exec server bash
+	docker compose down --rmi local;
+def:
+	docker-compose exec frontend sh
 ps:
 	docker-compose ps
