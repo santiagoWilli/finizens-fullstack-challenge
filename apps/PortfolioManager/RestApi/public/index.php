@@ -9,6 +9,9 @@ use Finizens\Apps\PortfolioManager\RestAPI\ErrorHandlers\DefaultJsonErrorHandler
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use Slim\Routing\RouteCollectorProxy;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
 require __DIR__ . '/../config/container.php';
@@ -21,6 +24,14 @@ $errorMiddleware->setDefaultErrorHandler(DefaultJsonErrorHandler::class);
 
 $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
+
+$app->add(function (Request $request, RequestHandler $handler): Response {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+});
 
 $app->group('/api', function (RouteCollectorProxy $group) {
     $group->group('/portfolios/{id}', function (RouteCollectorProxy $group) {
