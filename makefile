@@ -18,3 +18,6 @@ def:
 	docker-compose exec frontend sh
 ps:
 	docker-compose ps
+test:
+	docker-compose exec server vendor/bin/behat
+	docker-compose exec server vendor/bin/phpunit tests
