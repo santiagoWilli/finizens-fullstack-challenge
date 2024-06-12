@@ -18,6 +18,9 @@ export default createStore({
         },
         setOrders(state, orders) {
             state.orders = orders;
+        },
+        removeOrder(state, order) {
+            state.orders = state.orders.filter(o => o.id !== order.id);
         }
     },
     actions: {
@@ -27,7 +30,15 @@ export default createStore({
                 .catch(() => ({}));
             axios.get(`${API_URL}/orders?portfolio=1&completed=false`)
                 .then(({ data }) => { commit('setOrders', data) })
-                .catch(() => ({}));
+                .catch(() => {});
+        },
+        completeOrder({ commit, dispatch }, order) {
+            axios.patch(`${API_URL}/orders/${order.id}`, {status: 'completed'})
+                .then(() => {
+                    commit('removeOrder', order);
+                    dispatch('fetchPortfolio');
+                })
+                .catch(() => {});
         }
     }
 });

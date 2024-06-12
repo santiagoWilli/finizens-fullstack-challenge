@@ -12,6 +12,7 @@ use Slim\Routing\RouteCollectorProxy;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Psr7\Response as SlimResponse;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
 require __DIR__ . '/../config/container.php';
@@ -26,7 +27,9 @@ $routeCollector = $app->getRouteCollector();
 $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());
 
 $app->add(function (Request $request, RequestHandler $handler): Response {
-    $response = $handler->handle($request);
+    $response = $request->getMethod() === 'OPTIONS'
+        ? new SlimResponse()
+        : $handler->handle($request);
     return $response
         ->withHeader('Access-Control-Allow-Origin', '*')
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
