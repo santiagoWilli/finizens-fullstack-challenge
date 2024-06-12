@@ -49,8 +49,13 @@ const completeOrder = (order) => {
             error.value = "";
         })
         .catch(({ response }) => {
-            if (response.status === 409) {
-                error.value = "Cannot complete a sell order that would leave the allocation with a negative shares amount";
+            switch (response.status) {
+                case 404:
+                    error.value = "Cannot complete a sell order for an allocation that does not currently exist";
+                    break;
+                case 409:
+                    error.value = "Cannot complete a sell order that would leave the allocation with a negative shares amount";
+                    break;
             }
         });
 }
