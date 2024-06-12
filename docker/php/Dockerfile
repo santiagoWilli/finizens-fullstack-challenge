@@ -12,9 +12,7 @@ RUN apt update \
 # Use the default production configuration for PHP runtime arguments, see
 # https://github.com/docker-library/docs/tree/master/php#configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY ./composer.* /var/www/html
-COPY ./src /var/www/html/src
-COPY ./apps /var/www/html/apps
+COPY . /var/www/html
 
 WORKDIR /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

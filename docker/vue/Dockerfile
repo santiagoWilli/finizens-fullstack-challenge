@@ -1,13 +1,11 @@
-# syntax=docker/dockerfile:1
-
 FROM node:20-alpine
 
-COPY ./apps/PortfolioManager/gui /app
 WORKDIR /app
 
-RUN npm install -g @vue/cli
+# Copiar los archivos de configuración del paquete npm y luego instalar dependencias
+COPY ./apps/PortfolioManager/gui/package*.json .
 RUN npm install
-RUN npm run build
+COPY ./apps/PortfolioManager/gui .
 
-EXPOSE 8080
-CMD ["npm", "run", "serve"]
+# Ejecutar el comando vue-cli-service directamente desde node_modules
+CMD ["./node_modules/.bin/vue-cli-service", "serve"]

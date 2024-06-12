@@ -15,8 +15,6 @@ services:
       - DB_HOST=db
       - DB_NAME=finizens
       - DB_USER=root
-    volumes:
-      - .:/var/www/html
   db:
     image: mariadb
     restart: always
@@ -50,8 +48,6 @@ services:
       dockerfile: ./docker/vue/Dockerfile
     ports:
       - 8080:8080
-    volumes:
-      - ./apps/PortfolioManager/GUI:/app
     depends_on:
       - server
 volumes:
