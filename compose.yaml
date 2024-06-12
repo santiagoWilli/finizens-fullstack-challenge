@@ -15,6 +15,12 @@ services:
       - DB_HOST=db
       - DB_NAME=finizens
       - DB_USER=root
+    volumes:
+      - ./apps/PortfolioManager/RestApi:/var/www/html/apps/PortfolioManager/RestApi
+      - ./src:/var/www/html/src
+      - ./tests:/var/www/html/tests
+      - ./features:/var/www/html/features
+      - ./composer.json:/var/www/html/composer.json
   db:
     image: mariadb
     restart: always
@@ -48,6 +54,8 @@ services:
       dockerfile: ./docker/vue/Dockerfile
     ports:
       - 8080:8080
+    volumes:
+      - ./apps/PortfolioManager/gui/src:/app/src
     depends_on:
       - server
 volumes:
