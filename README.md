@@ -9,16 +9,19 @@
 - `make def` will access the frontend container's terminal
 
 
-## Resources
-
-Build and run the Docker containers with `make du` and you'll have available the following:
+## How to & resources
+First of all, under the folder `db` create a file `password.txt` with a string value with no new line at the end of file. For example:
+```
+example
+```
+Then build and run the Docker containers with `make du` and you'll have available the following:
 - http://localhost:8080 - GUI (Vue3 SPA)
 - http://localhost:9000 - RESTful API (PHP Slim)
 - http://localhost:8081 - phpMyAdmin
 
 ## Considerations
 
-You will have to first execute the tests with `make test` in order to set up the user's portfolio.
+You will have to execute first the tests with `make test` in order to set up the user's portfolio.
 
 Due to time limitations, the frontend lacks of any "portfolio creation" option. It also assumes the portfolio with ID 1 always exists and only works with that portfolio.
 
