@@ -24,4 +24,6 @@ Due to time limitations, the frontend lacks of any "portfolio creation" option. 
 
 The RESTful API has been developed following BDD so every decision was taken due to what the Gherkin functional tests expected. I have also added more functional tests that I believe were missing such as those for the `GET /orders` endpoint.
 
+Both backend and frontend are run using development tools (php in-built server & vue-cli-service serve) for simplicity and a quick solution for the technical test.
+
 I'm certain both backend and frontend could be refactored and improved. However, I have already spent a lot of time with this technical test and I cannot dedicate more time to it. I would really appreciate any suggestions for improvement.
