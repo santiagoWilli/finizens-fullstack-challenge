@@ -18,9 +18,6 @@ export default createStore({
         },
         setOrders(state, orders) {
             state.orders = orders;
-        },
-        removeOrder(state, order) {
-            state.orders = state.orders.filter(o => o.id !== order.id);
         }
     },
     actions: {
@@ -32,13 +29,22 @@ export default createStore({
                 .then(({ data }) => { commit('setOrders', data) })
                 .catch(() => {});
         },
-        completeOrder({ commit, dispatch }, order) {
-            axios.patch(`${API_URL}/orders/${order.id}`, {status: 'completed'})
+        async completeOrder({ dispatch }, order) {
+            return axios.patch(`${API_URL}/orders/${order.id}`, {status: 'completed'})
                 .then(() => {
-                    commit('removeOrder', order);
                     dispatch('fetchPortfolio');
-                })
-                .catch(() => {});
+                });
+        },
+        async newOrder({ dispatch }, order) {
+            return axios.post(`${API_URL}/orders`, {
+                id: order.id,
+                portfolio: order.portfolio,
+                allocation: order.allocation,
+                shares: order.shares,
+                type: order.type
+            }).then(() => {
+                dispatch('fetchPortfolio');
+            });
         }
     }
 });

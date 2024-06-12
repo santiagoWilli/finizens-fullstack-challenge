@@ -25,19 +25,33 @@
             </tr>
         </table>
         <span v-else>There are no pending orders</span>
+        <Error :message="error" />
+        <h2>New order</h2>
+        <NewOrder />
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
+
+import NewOrder from './NewOrder.vue';
+import Error from './Error.vue';
 
 const store = useStore();
 const allocations = computed(() => store.getters.allocations);
 const orders = computed(() => store.getters.orders);
+let error = ref("");
 
 const completeOrder = (order) => {
-    store.dispatch('completeOrder', order);
+    store.dispatch('completeOrder', order)
+        .then(() => {
+            error.value = "";
+        })
+        .catch(({ response }) => {
+            if (response.status === 409) {
+                error.value = "Cannot complete a sell order that would leave the allocation with a negative shares amount";
+            }
+        });
 }
-
 </script>
