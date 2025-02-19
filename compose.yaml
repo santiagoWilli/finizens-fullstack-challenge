@@ -1,0 +1,65 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    ports:
+      - 9000:9000
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - db-password
+    environment:
+      - PASSWORD_FILE_PATH=/run/secrets/db-password
+      - DB_HOST=db
+      - DB_NAME=finizens
+      - DB_USER=root
+    volumes:
+      - ./apps/PortfolioManager/RestApi:/var/www/html/apps/PortfolioManager/RestApi
+      - ./src:/var/www/html/src
+      - ./tests:/var/www/html/tests
+      - ./features:/var/www/html/features
+      - ./composer.json:/var/www/html/composer.json
+  db:
+    image: mariadb
+    restart: always
+    user: root
+    secrets:
+      - db-password
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-password
+      - MARIADB_DATABASE=finizens
+    expose:
+      - 3306
+    healthcheck:
+      test:  ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect",  "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8081:80
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=db
+  frontend:
+    build:
+      context: .
+      dockerfile: ./docker/vue/Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./apps/PortfolioManager/gui/src:/app/src
+    depends_on:
+      - server
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt

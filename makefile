@@ -6,3 +6,18 @@ install:
 start:
 	echo "Launching mocked server, visit http://localhost:3000"
 	cd frontend_server && npm start
+
+du:
+	docker compose up --build -d;
+ds:
+	docker compose down --rmi local;
+des:
+	docker-compose exec server bash
+	docker compose down --rmi local;
+def:
+	docker-compose exec frontend sh
+ps:
+	docker-compose ps
+test:
+	docker-compose exec server vendor/bin/behat
+	docker-compose exec server vendor/bin/phpunit tests

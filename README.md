@@ -1,101 +1,32 @@
 # Finizens' FullStack Challenge
 
-## Instructions
+## Make commands
 
-  - Feel free to use the framework, persistence system and third party library you like.
-   As well other tooling.
-   
-  - You will need a GIT client to clone this repository. Once you finish
-  create a patch of your work and send it to us. 
-    - https://thoughtbot.com/blog/send-a-patch-to-someone-using-git-format-patch
-    
-  - You will find the required scenarios on the `features` folder of the project. 
-  These are written in Gherkin language, you can use they as acceptance tests.
-  
-  - Whenever a system **PUT** a portfolio, every related data (allocations and orders)
-    will be deleted.
+- `make du` will build and run the containers.
+- `make ds` will stop the containers.
+- `make test` will execute both functional and unit tests.
+- `make des` will access the backend container's terminal
+- `make def` will access the frontend container's terminal
 
 
-## Backend
-
-As a robo-advisor in Finizens we manage client's investment portfolios. 
-In order to do this, a Customer contracts new portfolios and will trade allocations
-on these portfolios.
-
-The system will create a portfolio with its allocations.
-In order to operate with the portfolio, it will create buy and sell
-allocations' orders. Whenever an order is created, it will be completed on a undefined time. 
-
-New allocations can be bought, even if they are present or not on the portfolio.
-
-Allocations in the portfolio can be sold, if they not exceed the shares of it.
-If an allocation hits 0 shares must be removed from the portfolio.
-
-### Let's see the following scenario
-
-The system creates a portfolio with two allocations: 
+## How to & resources
+First of all, under the folder `db` create a file `password.txt` with a string value with no new line at the end of file. For example:
 ```
-{
-  "id": 1,
-  "allocations": [
-    {
-      "id": 1,
-      "shares": 3
-    },
-    {
-      "id": 2,
-      "shares": 4
-    }
-  ]
-}
+example
 ```
+Then build and run the Docker containers with `make du` and you'll have available the following:
+- http://localhost:8080 - GUI (Vue3 SPA)
+- http://localhost:9000 - RESTful API (PHP Slim)
+- http://localhost:8081 - phpMyAdmin
 
-Then creates a buy order for a new allocation:
-```
-{
-  "id": 1,
-  "portfolio": 1,
-  "allocation": 3,
-  "shares": 3,
-  "type": "buy"
-}
-```
+## Considerations
 
-So, now the allocation still is not part of the portfolio **until the order is completed**.
-Once completed the portfolio should be like:
-```
-{
-  "id": 1,
-  "allocations": [
-    {
-      "id": 1,
-      "shares": 3
-    },
-    {
-      "id": 2,
-      "shares": 4
-    },
-    {
-      "id": 3,
-      "shares": 3
-    },
-  ]
-}
-```
+You will have to execute first the tests with `make test` in order to set up the user's portfolio.
 
-## Frontend
+Due to time limitations, the frontend lacks of any "portfolio creation" option. It also assumes the portfolio with ID 1 always exists and only works with that portfolio.
 
-Create a view to operate the portfolio. It must show the portfolio, its allocations
-and the current portfolio's non completed orders.
+The RESTful API has been developed following BDD so every decision was taken due to what the Gherkin functional tests expected. I have also added more functional tests that I believe were missing such as those for the `GET /orders` endpoint.
 
-In order to keep the simplicity we can only create total sell orders of an allocation,
-which means that all the shares will be sold.
+Both backend and frontend are run using development tools (php in-built server & vue-cli-service serve) for simplicity and a quick solution for the technical test.
 
-Orders must be completed manually selecting them from a list. 
-
-When the order is completed, the portfolio must be refreshed to update the information.
-
-In case you'd like to start with the frontend or don't have enough time for completing the backend, you still can focus on the frontend with a simulated API we set up for this challenge:
-* Install it running `make install` from your project's root directory, it should install all the required node dependencies.
-* Run the mocked server with `make start`
-* Check it running at http://localhost:3000
+I'm certain both backend and frontend could be refactored and improved. However, I have already spent a lot of time with this technical test and I cannot dedicate more time to it. I would really appreciate any suggestions for improvement.

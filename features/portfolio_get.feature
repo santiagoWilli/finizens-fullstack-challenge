@@ -43,3 +43,7 @@ Feature: Get portfolio
     Given I send a PATCH request to "/api/portfolios/1"
     Then the response status code should be 405
     And the response should be empty
+  Scenario: Inexistent portfolio
+    Given I send a GET request to "/api/portfolios/101"
+    Then the response status code should be 404
+    And the response should be empty
